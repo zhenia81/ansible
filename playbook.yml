@@ -1,0 +1,33 @@
+---
+- name: Install NGINX and Upload web site
+  hosts: all
+  become: yes
+
+  vars:
+    source_folder           : ./MyWebSite
+    destination_folder      : /var/www/html
+    source_file_NGINX     : ./MyWebSite/nginx/mywebsite.conf
+    destination_folder_NGINX: /etc/nginx/conf.d
+
+  tasks:
+
+  - name: Print Linux version
+    debug: var=ansible_os_family
+
+  - name: Install NGINX
+    apt: name=nginx state=latest
+
+  - name: Copy NGINX conf
+    copy: src={{ source_file_NGINX }} dest={{ destination_folder_NGINX }} mode=0555
+    notify: Restart NGINX
+
+  - name: Generate index.html
+    template: src={{ source_folder }}/index.j2 dest={{ destination_folder}}/index.html mode=0555
+    notify: Restart NGINX
+
+  - name: Start NGINX
+    service: name=nginx state=started enabled=yes
+
+  handlers:
+  - name: Restart NGINX
+    service: name=nginx state=restarted

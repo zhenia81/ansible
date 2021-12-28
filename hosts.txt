@@ -1,0 +1,2 @@
+[TEST_SERVERS]
+AWS1 ansible_host=18.189.20.149     owner=Krupelnytskyi   
